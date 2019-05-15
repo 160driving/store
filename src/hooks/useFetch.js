@@ -9,7 +9,7 @@ export default ({ transform, path }) => {
   const { apiUrl, globalHeaders, beforeGet, afterGet } = useContext(Context);
   const paths = Array.isArray(path) ? path : [path];
 
-  const fetchItems = ({ params = {}, headers = {}, replace = {} }) => {
+  const fetchItems = ({ params = {}, headers = {}, replace = {} } = {}) => {
     return new Promise((resolve, reject) => {
       const requests = paths.map((pathName, index) => {
         let resourceParams = Array.isArray(params) ? params[index] : params;

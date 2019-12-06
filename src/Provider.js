@@ -1,6 +1,8 @@
-import React, { Component } from 'react';
-import { Provider } from './context';
-import { setPath, getPath } from 'utils';
+import React, { Component } from "react";
+import axios from "axios";
+import { setPath, getPath } from "utils";
+
+import { Provider } from "./context";
 
 export default class StateProvider extends Component {
   constructor(props) {
@@ -45,7 +47,10 @@ export default class StateProvider extends Component {
       return getPath(data, paths);
     }
 
-    return paths.reduce((acc, path) => ({ ...acc, [path]: getPath(data, path) }), {});
+    return paths.reduce(
+      (acc, path) => ({ ...acc, [path]: getPath(data, path) }),
+      {}
+    );
   };
 
   getBusy = path => {
@@ -64,17 +69,37 @@ export default class StateProvider extends Component {
     window.dispatchEvent(new CustomEvent(`refresh.${name}`));
   };
 
+  getAxiosConfig = () => {
+    const { interceptResponse } = this.props;
+    let request = axios.create();
+
+    if (interceptResponse) {
+      request.interceptors.response.use(interceptResponse);
+    }
+
+    return request;
+  };
+
   render() {
     const {
       children,
-      apiUrl = '',
+      apiUrl = "",
       headers,
       beforeGet,
       afterGet,
       beforeSave,
       afterSave
     } = this.props;
-    const { setData, setBusy, setShown, getData, getBusy, getShown, refreshResource } = this;
+
+    const {
+      setData,
+      setBusy,
+      setShown,
+      getData,
+      getBusy,
+      getShown,
+      refreshResource
+    } = this;
 
     return (
       <Provider
@@ -91,7 +116,8 @@ export default class StateProvider extends Component {
           beforeGet,
           afterGet,
           beforeSave,
-          afterSave
+          afterSave,
+          request: this.getAxiosConfig()
         }}
       >
         {children}

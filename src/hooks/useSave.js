@@ -1,7 +1,6 @@
-import React, { useContext } from 'react';
-import axios from 'axios';
+import React, { useContext } from "react";
 
-import Context from '../context';
+import Context from "../context";
 
 export default ({
   path,
@@ -9,16 +8,24 @@ export default ({
   validate,
   headers = {},
   transform,
-  method = 'post',
+  method = "post",
   transformUrl
 }) => {
-  const { apiUrl, setBusy, getBusy, globalHeaders, beforeSave, afterSave } = useContext(Context);
+  const {
+    apiUrl,
+    setBusy,
+    getBusy,
+    globalHeaders,
+    beforeSave,
+    afterSave,
+    request
+  } = useContext(Context);
   const busyName = `save${name}`;
 
   const save = ({ key, ...values }) => {
     return new Promise((resolve, reject) => {
       if (validate && !validate(values)) {
-        reject(new Error('Failed to pass validation'));
+        reject(new Error("Failed to pass validation"));
         return;
       }
 
@@ -26,7 +33,10 @@ export default ({
         path = transformUrl(path, values);
       }
 
-      const fullApiUrl = `${apiUrl}/${path.replace(/:(\w+)/, (_, group) => values[group])}`;
+      const fullApiUrl = `${apiUrl}/${path.replace(
+        /:(\w+)/,
+        (_, group) => values[group]
+      )}`;
 
       if (transform) {
         values = transform(values);
@@ -38,7 +48,7 @@ export default ({
 
       setBusy(busyName);
 
-      axios({
+      request({
         method,
         url: fullApiUrl,
         data: values,

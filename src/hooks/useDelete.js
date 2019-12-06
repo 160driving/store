@@ -1,18 +1,19 @@
-import React, { useContext } from 'react';
-import axios from 'axios';
+import React, { useContext } from "react";
 
-import Context from '../context';
+import Context from "../context";
 
 export default ({ path, name, headers = {} }) => {
-  const { apiUrl, setBusy, getBusy, globalHeaders } = useContext(Context);
+  const { apiUrl, setBusy, getBusy, globalHeaders, request } = useContext(
+    Context
+  );
   const busyName = `delete${name}`;
 
   const destroy = (params = {}) => {
     return new Promise((resolve, reject) => {
       setBusy(busyName);
 
-      axios({
-        method: 'delete',
+      request({
+        method: "delete",
         url: `${apiUrl}/${path.replace(/:(\w+)/, (_, group) => params[group])}`,
         headers: { ...globalHeaders(), ...headers }
       })

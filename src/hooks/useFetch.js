@@ -1,12 +1,14 @@
-import React, { useContext } from 'react';
-import axios from 'axios';
+import React, { useContext } from "react";
 
-import Context from '../context';
+import Context from "../context";
 
 export default ({ transform, path }) => {
-  const replaceParams = (str, obj) => str.replace(/:(\w+)/, (_, group) => obj[group]);
+  const replaceParams = (str, obj) =>
+    str.replace(/:(\w+)/, (_, group) => obj[group]);
 
-  const { apiUrl, globalHeaders, beforeGet, afterGet } = useContext(Context);
+  const { apiUrl, globalHeaders, beforeGet, afterGet, request } = useContext(
+    Context
+  );
   const paths = Array.isArray(path) ? path : [path];
 
   const fetchItems = ({ params = {}, headers = {}, replace = {} } = {}) => {
@@ -18,8 +20,8 @@ export default ({ transform, path }) => {
           resourceParams = beforeGet(resourceParams);
         }
 
-        return axios({
-          method: 'get',
+        return request({
+          method: "get",
           url: `${apiUrl}/${replaceParams(pathName, replace)}`,
           params: resourceParams,
           headers: { ...globalHeaders(), headers }

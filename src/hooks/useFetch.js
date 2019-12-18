@@ -29,7 +29,7 @@ export default ({ transform, path }) => {
       });
 
       Promise.all(requests)
-        .then(data => {
+        .then(async data => {
           data = data.map(response => response.data);
 
           if (afterGet) {
@@ -37,7 +37,8 @@ export default ({ transform, path }) => {
           }
 
           if (transform) {
-            data = transform(data.length > 1 ? data : data[0], params);
+            const dataToTransform = data.length > 1 ? data : data[0];
+            data = await Promise.resolve(transform(dataToTransform, params));
           }
 
           resolve(data);

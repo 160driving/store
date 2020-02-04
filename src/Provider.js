@@ -1,8 +1,8 @@
-import React, { Component } from "react";
-import axios from "axios";
-import { setPath, getPath } from "utils";
+import React, { Component } from 'react';
+import axios from 'axios';
+import { setPath, getPath } from 'utils';
 
-import { Provider } from "./context";
+import { Provider } from './context';
 
 export default class StateProvider extends Component {
   constructor(props) {
@@ -38,7 +38,7 @@ export default class StateProvider extends Component {
     this.setState({ shown });
   };
 
-  getData = paths => {
+  getData = (paths, transform) => {
     const { data } = this.state;
 
     if (!paths) {
@@ -47,10 +47,9 @@ export default class StateProvider extends Component {
       return getPath(data, paths);
     }
 
-    return paths.reduce(
-      (acc, path) => ({ ...acc, [path]: getPath(data, path) }),
-      {}
-    );
+    const returnValue = paths.reduce((acc, path) => ({ ...acc, [path]: getPath(data, path) }), {});
+
+    return transform ? transform(returnValue) : returnValue;
   };
 
   getBusy = path => {
@@ -83,7 +82,7 @@ export default class StateProvider extends Component {
   render() {
     const {
       children,
-      apiUrl = "",
+      apiUrl = '',
       headers,
       beforeGet,
       afterGet,
@@ -91,15 +90,7 @@ export default class StateProvider extends Component {
       afterSave
     } = this.props;
 
-    const {
-      setData,
-      setBusy,
-      setShown,
-      getData,
-      getBusy,
-      getShown,
-      refreshResource
-    } = this;
+    const { setData, setBusy, setShown, getData, getBusy, getShown, refreshResource } = this;
 
     return (
       <Provider

@@ -1,14 +1,11 @@
-import React, { useContext } from "react";
+import React, { useContext } from 'react';
 
-import Context from "../context";
+import Context from '../context';
 
-export default ({ transform, path }) => {
-  const replaceParams = (str, obj) =>
-    str.replace(/:(\w+)/, (_, group) => obj[group]);
+export default ({ transform, path, paramsSerializer }) => {
+  const replaceParams = (str, obj) => str.replace(/:(\w+)/, (_, group) => obj[group]);
 
-  const { apiUrl, globalHeaders, beforeGet, afterGet, request } = useContext(
-    Context
-  );
+  const { apiUrl, globalHeaders, beforeGet, afterGet, request } = useContext(Context);
   const paths = Array.isArray(path) ? path : [path];
 
   const fetchItems = ({ params = {}, headers = {}, replace = {} } = {}) => {
@@ -20,12 +17,18 @@ export default ({ transform, path }) => {
           resourceParams = beforeGet(resourceParams);
         }
 
-        return request({
-          method: "get",
+        let config = {
+          method: 'get',
           url: `${apiUrl}/${replaceParams(pathName, replace)}`,
           params: resourceParams,
           headers: { ...globalHeaders(), headers }
-        });
+        };
+
+        if (paramsSerializer) {
+          config.paramsSerializer = paramsSerializer;
+        }
+
+        return request(config);
       });
 
       Promise.all(requests)
